@@ -1,4 +1,5 @@
 import { registerRootComponent } from 'expo';
+import React, {reac} from 'react';
 
 import App from './App';
 
