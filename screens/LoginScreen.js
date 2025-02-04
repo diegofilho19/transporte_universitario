@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.buttonText}>login</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Cadastro do Aluno")}>
             <Text style={styles.linkText}>Não tem uma conta? Cadastre-se</Text>
           </TouchableOpacity>
         </View>
