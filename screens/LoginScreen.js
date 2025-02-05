@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 
 export default function LoginScreen({ navigation }) {
   const [cpf, setCpf] = useState("");
@@ -7,15 +7,18 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = () => {
     Alert.alert("Login efetuado com sucesso!");
-    navigation.navigate("Carteirinha");
+    navigation.navigate("Pagina Inicial");
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <View style={styles.leftContainer}>
         <Text style={styles.title}>Transporte Universitário</Text>
         <Text style={styles.subtitle}>Faça o login para ter acesso à sua carteira de transporte universitário.</Text>
-        <Image source={{uri: 'https://img.icons8.com/clouds/100/bus.png'}} style={styles.image} />
+        <Image source={require('../imgs/bus-yellow.png')} style={styles.image} />
       </View>
 
       <View style={styles.rightContainer}>
@@ -23,7 +26,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.loginTitle}>Login</Text>
 
           <Text style={styles.label}>CPF:</Text>
-          <TextInput style={styles.input} placeholder="CPF" value={cpf} onChangeText={setCpf} keyboardType="numeric" />
+          <TextInput style={styles.input} placeholder="CPF" value={cpf} onChangeText={setCpf} maxLength={11}/>
 
           <Text style={styles.label}>Senha:</Text>
           <TextInput style={styles.input} placeholder="Senha" value={senha} onChangeText={setSenha} secureTextEntry />
@@ -39,7 +42,7 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       <Text style={styles.footer}>@2025 - Todos Direitos Reservados - IVF-Assessoria na Gestão Pública</Text>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
