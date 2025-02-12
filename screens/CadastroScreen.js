@@ -3,12 +3,17 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvo
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from "expo-document-picker";
+import AlunoService from '../services/AlunoService'; // Importe o serviço
 
 export default function CadastroScreen() {
   const [comprovante, setComprovante] = useState(null);
   const [foto, setFoto] = useState(null);
   const [universidade, setUniversidade] = useState('');
   const [cidade, setCidade] = useState('');
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [matricula, setMatricula] = useState('');
+  const [senha, setSenha] = useState('');
   const navigation = useNavigation();
 
   const pickDocument = async (setFile) => {
@@ -18,9 +23,23 @@ export default function CadastroScreen() {
     }
   };
 
-  const handleLogin = () => {
-    Alert.alert("Cadastro realizado com sucesso!");
-    navigation.navigate("Login");
+  const handleCadastro = async () => {
+    try {
+      const alunoData = {
+        nome,
+        cpf,
+        matricula,
+        idFaculdade: universidade,
+        cidade,
+        status: 'ativo'
+      };
+
+      await AlunoService.createAluno(alunoData);
+      Alert.alert("Cadastro realizado com sucesso!");
+      navigation.navigate("Login");
+    } catch (error) {
+      Alert.alert("Erro ao realizar cadastro", error.message);
+    }
   };
 
   return (
@@ -31,19 +50,45 @@ export default function CadastroScreen() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.cadconteiner}>
           <Text style={styles.label}>Nome Completo:</Text>
-          <TextInput style={styles.input} placeholder="Digite Seu Nome" require/>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite Seu Nome"
+            value={nome}
+            onChangeText={setNome}
+            required
+          />
 
           <Text style={styles.label}>Cpf:</Text>
-          <TextInput style={styles.input} placeholder="CPF(000.000.000-00)" maxLength={11} require/>
+          <TextInput
+            style={styles.input}
+            placeholder="CPF(000.000.000-00)"
+            maxLength={13}
+            value={cpf}
+            onChangeText={setCpf}
+            required
+          />
 
           <Text style={styles.label}>Matrícula:</Text>
-          <TextInput style={styles.input} placeholder="Matricula" require/>
+          <TextInput
+            style={styles.input}
+            placeholder="Matricula"
+            value={matricula}
+            onChangeText={setMatricula}
+            required
+          />
 
           <Text style={styles.label}>Senha:</Text>
-          <TextInput style={styles.input} placeholder="Senha" secureTextEntry require/>
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            secureTextEntry
+            value={senha}
+            onChangeText={setSenha}
+            required
+          />
 
           <Text style={styles.label}>Confirme sua Senha:</Text>
-          <TextInput style={styles.input} placeholder="Confirme sua Senha" secureTextEntry require/>
+          <TextInput style={styles.input} placeholder="Confirme sua Senha" secureTextEntry required/>
 
           <Text style={styles.label}>Faculdade/Universidade:</Text>
           <View style={styles.pickerConteiner}>
@@ -97,7 +142,7 @@ export default function CadastroScreen() {
             <Text>{foto ? foto : "Selecionar Foto"}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.submitButton} onPress={handleLogin}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleCadastro}>
             <Text style={styles.submitButtonText}>CADASTRE-SE</Text>
           </TouchableOpacity>
         </View>
