@@ -2,24 +2,40 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker';
-import * as DocumentPicker from "expo-document-picker";
-import AlunoService from '../services/AlunoService'; // Importe o serviço
+import * as ImagePicker from 'expo-image-picker';
+import AlunoService from '../services/AlunoService';
+import { TextInputMask } from "react-native-masked-text"; // Importe o serviço
 
 export default function CadastroScreen() {
-  const [comprovante, setComprovante] = useState(null);
   const [foto, setFoto] = useState(null);
   const [universidade, setUniversidade] = useState('');
   const [cidade, setCidade] = useState('');
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
+  const [numero, setNumero] = useState('');
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
   const navigation = useNavigation();
 
-  const pickDocument = async (setFile) => {
-    let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
-    if (result.type !== "cancel") {
-      setFile(result.name);
+  const pickImage = async (setFoto) => {
+    // Solicita permissão para acessar a biblioteca de fotos
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permissão para acessar a biblioteca de fotos negada!');
+      return;
+    }
+  
+    // Abre a biblioteca de fotos e permite selecionar uma imagem
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true, // Permite editar a imagem antes de selecioná-la (opcional)
+      aspect: [1, 1], // Define a proporção da imagem (opcional)
+      quality: 1, // Define a qualidade da imagem (opcional)
+    });
+  
+    // Se o usuário selecionar uma imagem, atualiza o estado `foto`
+    if (!result.canceled) {
+      setFoto(result.assets[0].uri);
     }
   };
 
@@ -28,6 +44,7 @@ export default function CadastroScreen() {
       const alunoData = {
         nome,
         cpf,
+        numero,
         matricula,
         idFaculdade: universidade,
         cidade,
@@ -58,14 +75,30 @@ export default function CadastroScreen() {
             required
           />
 
-          <Text style={styles.label}>Cpf:</Text>
-          <TextInput
+          <Text style={styles.label}>CPF:</Text>
+          <TextInputMask 
             style={styles.input}
-            placeholder="CPF(000.000.000-00)"
-            maxLength={13}
+            type={'cpf'}
+            onChangeText={ text => setCpf(text)}
+            placeholder="Digite Seu CPF"
             value={cpf}
-            onChangeText={setCpf}
             required
+          />
+
+          <Text style={styles.label}>Número(Tel):</Text>
+          <TextInputMask 
+            style={styles.input}
+            type={'cel-phone'}
+            options={{
+              maskType: 'BRL',
+              withDDD: true,
+              dddMask: '(99) ',
+            }}
+            onChangeText={ text => setNumero(text)}
+            placeholder="Digite Seu Número"
+            value={numero}
+            required
+            maxLength={15}
           />
 
           <Text style={styles.label}>Matrícula:</Text>
@@ -111,6 +144,8 @@ export default function CadastroScreen() {
             </Picker>
           </View>
 
+          
+
           <Text style={styles.label}>Cidade:</Text>
               <View style={styles.pickerConteiner}>
                 <Picker
@@ -130,18 +165,20 @@ export default function CadastroScreen() {
                   <Picker.Item label="Garanhuns" value="garanhuns" />
                   <Picker.Item label="Vitória de Santo Antão" value="vitoria" />
                 </Picker>
-              </View>
+              </View> 
+              
+              <Text style={styles.label}>Curso:</Text>
+              <TextInput style={styles.input} placeholder="Curso" required/>
 
-          <Text style={styles.label}>Comprovante de Matrícula:</Text>
+          {/*<Text style={styles.label}>Comprovante de Matrícula:</Text>
           <TouchableOpacity style={styles.uploadButton} onPress={() => pickDocument(setComprovante)}>
             <Text>{comprovante ? comprovante : "Selecionar Comprovante de Matrícula"}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>*/}
 
-          <Text style={styles.label}>Foto:</Text>
-          <TouchableOpacity style={styles.uploadButton} onPress={() => pickDocument(setFoto)}>
-            <Text>{foto ? foto : "Selecionar Foto"}</Text>
-          </TouchableOpacity>
-
+          <Text style={styles.label}>Foto do Aluno:</Text>
+            <TouchableOpacity style={styles.uploadButton} onPress={() => pickImage(setFoto)}>             
+               <Text>{foto ? 'Foto Selecionada' : 'Selecionar Foto'}</Text>
+            </TouchableOpacity>
           <TouchableOpacity style={styles.submitButton} onPress={handleCadastro}>
             <Text style={styles.submitButtonText}>CADASTRE-SE</Text>
           </TouchableOpacity>
@@ -166,10 +203,12 @@ const styles = StyleSheet.create({
     padding: 20, 
     borderRadius: 10, 
     elevation: 5, 
-    width: 370, 
+    width: '90%', 
     height: 'auto', 
     flexDirection: 'column',
     alignContent: 'flex-start', 
+    marginTop: 10,
+    
   },
   label: {
     fontSize: 16,

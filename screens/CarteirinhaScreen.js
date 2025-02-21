@@ -1,12 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 
-export default function CarteirinhaScreen() {
+export default function CarteirinhaScreen({ isActive = true }) {
+  // isActive será recebido do dashboard, com valor padrão true
+  
   return (
     <View style={styles.container}>
       <View style={styles.cardconteiner}>
         <Text style={styles.title}>Carteira do Estudante</Text>
-        <Text style={styles.text}>Aqui vai a sua carteira do estudante com QR Code.</Text>
+        <Text style={styles.text}>Aqui vai a sua carteira do estudante.</Text>
         <View style={styles.cardAluno}>
           <Image style={styles.fotoaluno} source={{ uri: 'https://example.com/aluno.png' }} />
         </View>
@@ -15,10 +17,25 @@ export default function CarteirinhaScreen() {
         <Text style={styles.info}>Matrícula: 00000000</Text>
         <Text style={styles.info}>Carro: Nome do carro</Text> 
         
-        <Text style={styles.qrLabel}>QR-CODE:</Text>
-        <Image style={styles.qrCode} source={{uri:'https://img.icons8.com/ios/50/qr-code--v1.png'}} />
+        <Text style={styles.status}>STATUS:</Text>
+        
+        {/* Indicador de Status (não clicável) */}
+        <View style={styles.statusIndicatorContainer}>
+          <View
+            style={[
+              styles.statusIndicator,
+              isActive ? styles.activeIndicator : styles.inactiveIndicator
+            ]}
+          >
+            <Text 
+              style={isActive ? styles.activeText : styles.inactiveText}
+            >
+              {isActive ? "Ativo" : "Inativo"}
+            </Text>
+          </View>
         </View>
       </View>
+    </View>
   );
 }
 
@@ -35,7 +52,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     elevation: 5, 
     width: 350, 
-    height: 643, 
+    height: 600, 
     alignItems: "center", 
   },
   title: { 
@@ -64,7 +81,6 @@ const styles = StyleSheet.create({
     height: 100, 
     borderRadius: 50 
   },
-
   info: {
     display: 'flex',
     fontSize: 18,
@@ -72,15 +88,39 @@ const styles = StyleSheet.create({
     margin: 0,
     marginTop: 10,
   },
-
-  qrLabel: {
+  status: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 15,
+    marginTop: 25,
+    marginBottom: 10,
   },
-  qrCode: {
-    width: 100,
-    height: 100,
-    marginTop: 10,
+  // Estilos para o indicador de status
+  statusIndicatorContainer: {
+    width: '80%',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  statusIndicator: {
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 4,
+    width: '100%',
+    alignItems: 'center',
+  },
+  activeIndicator: {
+    backgroundColor: '#A8E6D5',
+  },
+  inactiveIndicator: {
+    backgroundColor: '#FFCCCB',
+  },
+  activeText: {
+    color: '#2E8B57',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  inactiveText: {
+    color: '#CD5C5C',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

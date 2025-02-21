@@ -18,7 +18,7 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.leftContainer}>
         <Text style={styles.title}>Transporte Universitário</Text>
         <Text style={styles.subtitle}>Faça o login para ter acesso à sua carteira de transporte universitário.</Text>
-        <Image source={require('../imgs/bus-yellow.png')} style={styles.image} />
+        <Image source={require('../assets/imgs/bus-yellow.png')} style={styles.image} />
       </View>
 
       <View style={styles.rightContainer}>
@@ -49,7 +49,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f5f5f5" },
   leftContainer: { alignItems: "center", marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: "bold", textAlign: "center" },
+  title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginTop: 40 },
   subtitle: { fontSize: 16, textAlign: "center", marginBottom: 10 },
   image: { width: 200, height: 200, resizeMode: "contain" },
   rightContainer: { width: "80%", alignItems: "center" },
