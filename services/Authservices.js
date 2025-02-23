@@ -2,7 +2,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = 'http://192.168.1.105:8081/transporte-api/';
+const BASE_URL = 'http://192.168.1.105/sistema_dashboard/alunos/cadastrar_aluno.php';
 
 const AuthService = {
     login: async (cpf, senha) => {

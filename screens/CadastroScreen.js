@@ -41,23 +41,40 @@ export default function CadastroScreen() {
 
   const handleCadastro = async () => {
     try {
-      const alunoData = {
-        nome,
-        cpf,
-        numero,
-        matricula,
-        idFaculdade: universidade,
-        cidade,
-        status: 'ativo'
-      };
+        let fotoParaEnviar = null; // Variável para armazenar a foto
 
-      await AlunoService.createAluno(alunoData);
-      Alert.alert("Cadastro realizado com sucesso!");
-      navigation.navigate("Login");
+        if (foto) {
+            // Converter a foto para base64 (se necessário) ou obter o URI
+            const response = await fetch(foto);
+            const blob = await response.blob();
+            fotoParaEnviar = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        const alunoData = {
+            nome_completo: nome, // Corrigido para nome_completo
+            cpf,
+            numero_tel: numero, // Corrigido para numero_tel
+            matricula,
+            senha, // Inclua a senha aqui
+            id_faculdade: universidade, // Certifique-se que universidade tem o ID correto
+            id_cidade: cidade, // Certifique-se que cidade tem o ID correto
+            curso: 'curso', // Inclua o curso
+            foto: fotoParaEnviar, // Inclui a foto (base64)
+        };
+
+        await AlunoService.createAluno(alunoData);
+        Alert.alert("Cadastro realizado com sucesso!");
+        navigation.navigate("Login");
     } catch (error) {
-      Alert.alert("Erro ao realizar cadastro", error.message);
+        console.error("Erro no cadastro:", error); // Log do erro completo
+        Alert.alert("Erro ao realizar cadastro", error.message || "Ocorreu um erro inesperado.");
     }
-  };
+};
 
   return (
     <KeyboardAvoidingView
