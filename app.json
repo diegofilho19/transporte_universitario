@@ -4,7 +4,7 @@
     "slug": "transporte_universitario",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "",
+    "icon": "./assets/imgs/logo.png",
     "splash": {
       "image": "",
       "resizeMode": "contain",
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "",
+        "foregroundImage": "./assets/imgs/logo.png",
         "backgroundColor": "#FFFFFF"
       }
     },
