@@ -18,7 +18,7 @@
     "axios": "^1.7.9",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "expo": "~52.0.36",
+    "expo": "~52.0.38",
     "expo-barcode-scanner": "^13.0.1",
     "expo-document-picker": "~13.0.3",
     "expo-image-picker": "^16.0.6",

@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://192.168.1.106/sistema_dashboard/backend";
+const API_BASE_URL = "http://192.168.1.103/sistema_dashboard/backend";
 const API_CADASTRO_URL = `${API_BASE_URL}/alunos/api_cadastro.php`;
 const API_LOGIN_URL = `${API_BASE_URL}/alunos/api_login_aluno.php`;
 const API_CARTEIRA_URL = `${API_BASE_URL}/alunos/api_carteira_aluno.php`;
@@ -7,14 +7,30 @@ const API_FACULDADES_URL = `${API_BASE_URL}/faculdades/get_faculdades.php`;
 const AlunoService = {
   createAluno: async (formData) => {
     try {
+      console.log("Enviando requisição para:", API_CADASTRO_URL);
+      
       const response = await fetch(API_CADASTRO_URL, {
         method: "POST",
         body: formData,
       });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || "Erro ao cadastrar aluno");
+      
+      // Obter texto da resposta para depuração
+      const responseText = await response.text();
+      console.log("Resposta bruta do servidor:", responseText);
+      
+      // Tentar converter para JSON
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Erro ao analisar JSON:", parseError);
+        throw new Error(`Servidor retornou: ${responseText}`);
       }
+      
+      if (!response.ok) {
+        throw new Error(result.error || result.message || "Erro ao cadastrar aluno");
+      }
+      
       return result;
     } catch (error) {
       console.error("Erro no cadastro:", error);
@@ -62,6 +78,12 @@ const AlunoService = {
 
       const result = await response.json();
       console.log("Resposta da API (carteira):", result);
+      
+      if (result.foto) {
+        console.log("Caminho da foto recebido:", result.foto);
+      } else {
+        console.log("Nenhuma foto recebida do servidor");
+      }
       
       return result;
     } catch (error) {

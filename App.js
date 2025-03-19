@@ -4,7 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import CarteirinhaScreen from "./src/screens/CarteirinhaScreen";
 import CadastroScreen from "./src/screens/CadastroScreen";
-import HomePage from "./src/screens/HomePage"
+import HomePage from "./src/screens/HomePage";
+console.log('Ambiente de execução:', process.env);
 
 
 const Stack = createStackNavigator();

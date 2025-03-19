@@ -4,11 +4,11 @@
     "slug": "transporte_universitario",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/imgs/logo.png",
+    "icon": "./assets/imgs/logo1.png",
     "splash": {
       "image": "",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fafafa"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,13 +21,22 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/imgs/logo.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/imgs/logo1.png",
+        "backgroundColor": "#FAFAFA"
       }
     },
     "web": {
       
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O aplicativo precisa acessar suas fotos para selecionar a foto do perfil.",
+          "cameraPermission": "O aplicativo precisa acessar sua câmera para tirar uma foto do perfil."
+        }
+      ]
+    ]
   }
 }

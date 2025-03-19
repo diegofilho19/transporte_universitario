@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import AlunoService from "../services/AlunoService";
 import { TextInputMask } from "react-native-masked-text";
+import { getSession, saveSession } from "../utils/sessionManager";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -25,6 +26,21 @@ export default function LoginScreen({ navigation }) {
   const [cpf, setCpf] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    try {
+      const alunoData = await getSession();
+      if (alunoData) {
+        navigation.navigate("Carteirinha", { cpf: alunoData.cpf });
+      }
+    } catch (error) {
+      console.error('Erro ao verificar status do login:', error);
+    }
+  };
 
   const handleLogin = async () => {
     if (!cpf || !senha) {
@@ -40,6 +56,7 @@ export default function LoginScreen({ navigation }) {
       console.log("Resposta da API:", response);
 
       if (response && response.aluno) {
+        await saveSession(response.aluno);
         Alert.alert("Sucesso", "Login efetuado com sucesso!");
         navigation.navigate("Carteirinha", { cpf: response.aluno.cpf });
       }
@@ -93,6 +110,7 @@ export default function LoginScreen({ navigation }) {
                   value={cpf}
                   onChangeText={setCpf}
                   keyboardType="numeric"
+                  placeholderTextColor={"#999"}
                 />
 
                 <Text style={styles.label}>Senha:</Text>
@@ -102,6 +120,7 @@ export default function LoginScreen({ navigation }) {
                   value={senha}
                   onChangeText={setSenha}
                   secureTextEntry
+                  placeholderTextColor={"#999"}
                 />
 
                 <TouchableOpacity
@@ -209,6 +228,8 @@ const styles = StyleSheet.create({
     padding: Platform.OS === "ios" ? 12 : 10,
     width: "100%",
     marginBottom: 15,
+    textDecorationColor: "#000",
+    placeholderTextcolor: "#000",
   },
   button: {
     backgroundColor: "#008cffdc",

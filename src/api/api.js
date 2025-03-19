@@ -8,7 +8,7 @@ const port = 3000;
 app.use(express.json());
 
 const storage = multer.diskStorage({
-  destination: "/backend/alunos/uploads",
+  destination: "/backend/alunos/uploads/fotoAluno/",
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
@@ -44,6 +44,8 @@ app.post(
       senha,
       id_faculdade,
       curso,
+      turno,
+      compMatricula,
       id_cidade,
     } = req.body;
     const foto = req.file ? req.file.filename : null;
@@ -56,6 +58,8 @@ app.post(
       !senha ||
       !id_faculdade ||
       !curso ||
+      !turno ||
+      !compMatricula||
       !id_cidade
     ) {
       return res
@@ -64,7 +68,7 @@ app.post(
     }
 
     const sql =
-      "INSERT INTO alunos (nome_completo, cpf, matricula, numero_tel, senha, id_faculdade, curso, id_cidade, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO alunos (nome_completo, cpf, matricula, numero_tel, senha, id_faculdade, curso, id_cidade, foto, turno, compMatricula) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
       nome_completo,
       cpf,
@@ -73,8 +77,10 @@ app.post(
       senha,
       id_faculdade,
       curso,
+      turno,
       id_cidade,
       foto,
+      compMatricula,
     ];
 
     db.query(sql, values, (err, result) => {
@@ -139,6 +145,7 @@ app.post("/backend/alunos/api_login_aluno.php", (req, res) => {
   });
 });
 
+//Get faculdades
 app.get("/backend/faculdades/get_faculdades.php", (req, res) => {
   const sql = "SELECT id, sigla, cidade FROM faculdades";
   db.query(sql, (err, results) => {
@@ -150,7 +157,7 @@ app.get("/backend/faculdades/get_faculdades.php", (req, res) => {
   });
 });
 
-app.use('/sistema_dashboard/backend/alunos/uploads', express.static(path.join(__dirname, 'backend/alunos/uploads')));
+app.use('/sistema_dashboard/backend/alunos/uploads/fotoAluno/', express.static(path.join(__dirname, 'backend/alunos/uploads/fotoAluno')));
 
 // Iniciar o servidor
 app.listen(PORT, () => {

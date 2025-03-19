@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import AlunoService from "../services/AlunoService";
+import { clearSession } from "../utils/sessionManager";
 
-const CarteirinhaScreen = ({ route }) => {
+const BASE_URL = "http://192.168.1.103/sistema_dashboard";
+
+const CarteirinhaScreen = ({ route, navigation }) => {
   const [aluno, setAluno] = useState({});
   const [loading, setLoading] = useState(true);
   let statusAtivo;
@@ -34,6 +37,39 @@ const CarteirinhaScreen = ({ route }) => {
     fetchCarteira();
   }, [route.params?.cpf]);
 
+  // Função para construir a URL completa da imagem
+  const getImageUrl = (relativePath) => {
+    if (!relativePath) return null;
+    
+    // Se já for uma URL completa, retornar como está
+    if (relativePath.startsWith('http')) {
+      return relativePath;
+    }
+    
+    // Corrigir a duplicação de caminhos 'uploads/fotoAluno'
+    let cleanPath = relativePath;
+    
+    // Verificar se há duplicação do caminho 'uploads/fotoAluno'
+    if (relativePath.includes('uploads/fotoAluno/uploads/fotoAluno/')) {
+      cleanPath = relativePath.replace('uploads/fotoAluno/uploads/fotoAluno/', 'uploads/fotoAluno/');
+    }
+    
+    // Remover quaisquer barras iniciais se existirem
+    if (cleanPath.startsWith('/')) {
+      cleanPath = cleanPath.substring(1);
+    }
+    
+    // Construir a URL completa
+    const baseUrl = `${BASE_URL}/backend/alunos`;
+    
+    // Verificar se o caminho já começa com 'uploads'
+    if (cleanPath.startsWith('uploads/')) {
+      return `${baseUrl}/${cleanPath}`;
+    } else {
+      return `${baseUrl}/uploads/fotoAluno/${cleanPath}`;
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -57,11 +93,15 @@ const CarteirinhaScreen = ({ route }) => {
         
         <View style={styles.cardAluno}>
           {aluno.foto ? (
-            <Image
-              style={styles.fotoaluno}
-              source={{ uri: aluno.foto }}
-              resizeMode="cover"
-            />
+            <>
+              {console.log("Caminho original:", aluno.foto)}
+              {console.log("URL da imagem após correção:", getImageUrl(aluno.foto))}
+              <Image
+                style={styles.fotoaluno}
+                source={{ uri: getImageUrl(aluno.foto) }}
+                resizeMode="cover"
+              />
+            </>
           ) : (
             <View style={styles.placeholderFoto}>
               <Text>Sem foto</Text>
@@ -84,6 +124,9 @@ const CarteirinhaScreen = ({ route }) => {
           <Text style={styles.info}>
             Cidade: {aluno.cidade || "Não disponível"}
           </Text>
+          <Text style={styles.info}>
+            Turno: {aluno.turno || "Não disponível"}
+          </Text>
         </View>
 
         <View style={styles.transportSection}>
@@ -100,6 +143,9 @@ const CarteirinhaScreen = ({ route }) => {
           <Text style={styles.info}>
             Destino: {aluno.destino || "Não disponível"}
           </Text>
+          <Text style={styles.info}>
+            Numero: {aluno.numero_fiscal || "Não disponível"}
+          </Text>
         </View>
 
         <Text style={styles.status}>STATUS:</Text>
@@ -115,6 +161,15 @@ const CarteirinhaScreen = ({ route }) => {
             </Text>
           </View>
         </View>
+        <TouchableOpacity 
+          style={styles.logoutButton}
+          onPress={async () => {
+            await clearSession();
+            navigation.navigate('Login');
+          }}
+        >
+          <Text style={styles.logoutButtonText}>Sair</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -126,38 +181,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
+    padding: 5,
   },
   cardconteiner: {
     backgroundColor: "#DFDFDF",
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     elevation: 5,
-    width: 350,
-    height: "90%",
+    width: '100%',
+    maxHeight: '95%',
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
     textTransform: "uppercase",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   cardAluno: {
-    marginVertical: 15,
+    marginVertical: 10,
     alignItems: "center",
   },
   fotoaluno: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     borderWidth: 2,
     borderColor: "#333",
   },
   placeholderFoto: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     backgroundColor: "#E0E0E0",
     justifyContent: "center",
     alignItems: "center",
@@ -166,42 +222,42 @@ const styles = StyleSheet.create({
   },
   infoSection: {
     width: "100%",
-    marginBottom: 15,
+    marginBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#AAAAAA",
-    paddingBottom: 10,
+    paddingBottom: 8,
   },
   transportSection: {
     width: "100%",
-    marginBottom: 15,
+    marginBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#AAAAAA",
-    paddingBottom: 10,
+    paddingBottom: 8,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 4,
     color: "#333",
   },
   info: {
     fontSize: 16,
-    marginVertical: 3,
+    marginVertical: 2,
   },
   status: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 15,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 5,
   },
   statusIndicatorContainer: {
     width: "80%",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 2,
   },
   statusIndicator: {
-    paddingVertical: 10,
-    paddingHorizontal: 30,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 4,
     width: "100%",
     alignItems: "center",
@@ -227,6 +283,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     marginTop: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#ff4444',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
 });
 
